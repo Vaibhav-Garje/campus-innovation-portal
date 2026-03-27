@@ -1,0 +1,4 @@
+com\campusportal\campusportal\repository\ProjectRepository.class
+com\campusportal\campusportal\repository\VoteRepository.class
+com\campusportal\campusportal\repository\MilestoneRepository.class
+com\campusportal\campusportal\repository\TeamMemberRepository.class
