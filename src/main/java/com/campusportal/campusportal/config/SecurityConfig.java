@@ -10,6 +10,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 
 @Configuration
 @EnableWebSecurity
@@ -27,29 +28,48 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/auth/**", "/css/**", "/js/**", "/images/**").permitAll()
-                        .requestMatchers("/faculty/**").hasAnyRole("FACULTY", "STUDENT")
-                        .requestMatchers("/admin/**").hasRole("ADMIN")
+                        .requestMatchers("/auth/**", "/css/**", "/js/**", "/images/**", "/static/**").permitAll()
+                        .requestMatchers("/faculty/**").authenticated()     // ← TEMPORARY: allow any logged-in user
+                        .requestMatchers("/admin/**").hasAuthority("ADMIN")
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form
                         .loginPage("/auth/login")
-                        .defaultSuccessUrl("/dashboard", true)
+                        .successHandler(customSuccessHandler())
                         .permitAll()
                 )
                 .logout(logout -> logout
                         .logoutUrl("/auth/logout")
                         .logoutSuccessUrl("/auth/login")
                         .permitAll()
-                );
+                )
+                .csrf(csrf -> csrf.disable());
+
         return http.build();
     }
 
     @Bean
-    public AuthenticationManager authenticationManager(
-            HttpSecurity http) throws Exception {
-        AuthenticationManagerBuilder builder =
-                http.getSharedObject(AuthenticationManagerBuilder.class);
+    public AuthenticationSuccessHandler customSuccessHandler() {
+        return (request, response, authentication) -> {
+            boolean isFaculty = authentication.getAuthorities().stream()
+                    .anyMatch(a -> a.getAuthority().equals("FACULTY") || a.getAuthority().equals("ROLE_FACULTY"));
+
+            boolean isAdmin = authentication.getAuthorities().stream()
+                    .anyMatch(a -> a.getAuthority().equals("ADMIN") || a.getAuthority().equals("ROLE_ADMIN"));
+
+            if (isAdmin) {
+                response.sendRedirect("/admin/dashboard");
+            } else if (isFaculty) {
+                response.sendRedirect("/faculty/dashboard");
+            } else {
+                response.sendRedirect("/dashboard");
+            }
+        };
+    }
+
+    @Bean
+    public AuthenticationManager authenticationManager(HttpSecurity http) throws Exception {
+        AuthenticationManagerBuilder builder = http.getSharedObject(AuthenticationManagerBuilder.class);
         builder.userDetailsService(userService)
                 .passwordEncoder(passwordEncoder());
         return builder.build();
