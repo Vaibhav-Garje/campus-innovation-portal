@@ -8,6 +8,7 @@ import java.util.List;
 public interface ProjectRepository extends JpaRepository<Project, Long> {
     List<Project> findByCreatedBy(User user);
     List<Project> findByStatus(String status);
+    List<Project> findByStatusOrCreatedBy(String status, User createdBy);
     List<Project> findByDomain(String domain);
     int countByStatus(String status);
 }

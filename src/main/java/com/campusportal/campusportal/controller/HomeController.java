@@ -2,6 +2,8 @@ package com.campusportal.campusportal.controller;
 
 import com.campusportal.campusportal.repository.ProjectRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,7 +16,11 @@ public class HomeController {
 
     @GetMapping("/")
     public String home() {
-        return "redirect:/auth/login";
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth != null && auth.isAuthenticated() && !auth.getPrincipal().equals("anonymousUser")) {
+            return "redirect:/dashboard";
+        }
+        return "index";
     }
 
     @GetMapping("/dashboard")

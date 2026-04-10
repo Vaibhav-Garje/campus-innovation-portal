@@ -1,61 +1,66 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head>
-    <title>Create Team - Campus Innovation Portal</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"/>
-</head>
-<body class="bg-light">
+<head th:replace="~{fragments/layout :: head('Team Formation - InnovateCampus')}"></head>
+<body class="bg-hyper-deep text-slate-50 min-h-screen relative flex flex-col">
+    
+    <!-- Hyper-Space Background -->
+    <div th:replace="~{fragments/layout :: background}"></div>
 
-<nav class="navbar navbar-dark bg-dark px-4">
-    <a class="navbar-brand fw-bold">🎓 Campus Innovation Portal</a>
-    <div>
-        <a th:href="@{/projects/list}" class="btn btn-outline-light btn-sm me-2">All Projects</a>
-        <a th:href="@{/dashboard}" class="btn btn-outline-light btn-sm me-2">Dashboard</a>
-        <a th:href="@{/auth/logout}" class="btn btn-danger btn-sm">Logout</a>
-    </div>
-</nav>
+    <!-- Navbar -->
+    <nav th:replace="~{fragments/layout :: navbar}"></nav>
 
-<div class="container mt-5">
-    <div class="row justify-content-center">
-        <div class="col-md-8">
-            <div class="card shadow-lg">
-                <div class="card-header bg-success text-white">
-                    <h4 class="mb-0">👥 Create Team / Join as Team Member</h4>
+    <div class="max-w-4xl mx-auto px-6 py-12 relative z-10 w-full animate-[fade-in_1s_ease-out]">
+        
+        <div class="mb-16 text-center">
+            <h1 class="text-6xl md:text-7xl font-black text-white leading-none uppercase italic tracking-tighter">
+                Neural <span class="animate-gradient">Sync</span>
+            </h1>
+            <p class="text-slate-500 mt-4 text-sm font-bold uppercase tracking-[0.4em]">Establish sectoral team connections</p>
+        </div>
+
+        <div class="glass rounded-[3rem] p-12 border-white/5 shadow-2xl relative overflow-hidden bg-black/40">
+            <!-- Glow background -->
+            <div class="absolute -top-32 -right-32 w-80 h-80 bg-hyper-pink/20 rounded-full blur-[100px] pointer-events-none"></div>
+            
+            <form th:action="@{/team/create}" method="post" class="space-y-10 relative z-10">
+                
+                <div class="space-y-4">
+                    <label class="block text-xs font-black uppercase tracking-[0.3em] text-hyper-cyan ml-2">Target Protocol</label>
+                    <div class="relative">
+                        <select name="projectId" class="w-full glass-input p-6 rounded-2xl text-xl font-bold appearance-none cursor-pointer" required>
+                            <option value="">-- Select Protocol to Join --</option>
+                            <option th:each="project : ${projects}"
+                                    th:value="${project.id}"
+                                    th:text="${project.title} + ' [' + ${project.domain} + ']'">
+                            </option>
+                        </select>
+                        <div class="absolute right-6 top-1/2 -translate-y-1/2 pointer-events-none text-hyper-cyan">▼</div>
+                    </div>
                 </div>
-                <div class="card-body p-4">
-                    <form th:action="@{/team/create}" method="post">
 
-                        <div class="mb-4">
-                            <label class="form-label fw-bold">Select Project</label>
-                            <select name="projectId" class="form-select" required>
-                                <option value="">-- Choose a Project --</option>
-                                <option th:each="project : ${projects}"
-                                        th:value="${project.id}"
-                                        th:text="${project.title} + ' (' + ${project.domain} + ')'">
-                                </option>
-                            </select>
-                        </div>
-
-                        <div class="mb-4">
-                            <label class="form-label fw-bold">Your Status in Team</label>
-                            <input type="text" class="form-control bg-light"
-                                   value="APPROVED (You are the creator)" readonly/>
-                        </div>
-
-                        <button type="submit" class="btn btn-success btn-lg w-100">
-                            ✅ Create Team Membership
-                        </button>
-                    </form>
+                <div class="space-y-4">
+                    <label class="block text-xs font-black uppercase tracking-[0.3em] text-hyper-pink ml-2">Authorized Status</label>
+                    <div class="w-full glass border-hyper-pink/20 bg-hyper-pink/5 p-6 rounded-2xl text-lg font-black text-hyper-pink flex items-center gap-4">
+                        <span class="animate-pulse">●</span> MASTER_ENTITY (Creator Access)
+                    </div>
                 </div>
-            </div>
 
-            <div class="text-center mt-4">
-                <a th:href="@{/projects/list}" class="btn btn-secondary">← Back to All Projects</a>
-            </div>
+                <div class="pt-6">
+                    <button type="submit" class="w-full py-6 rounded-2xl bg-gradient-to-r from-hyper-pink via-hyper-violet to-hyper-cyan text-white text-2xl font-black uppercase tracking-[0.2em] shadow-[0_0_50px_rgba(255,0,242,0.3)] hover:shadow-[0_0_70px_rgba(112,0,255,0.6)] hover:-translate-y-2 transition-all duration-500">
+                        INITIALIZE TEAM HUB
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <div class="mt-12 text-center">
+            <a th:href="@{/projects/list}" class="text-slate-500 hover:text-white font-bold uppercase text-xs tracking-[0.3em] transition-all">
+                &lsaquo; Return to Gallery
+            </a>
         </div>
     </div>
-</div>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Scripts -->
+    <div th:replace="~{fragments/layout :: scripts}"></div>
 </body>
 </html>

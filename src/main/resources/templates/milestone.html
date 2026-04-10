@@ -1,93 +1,128 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head>
-    <title>Project Milestones</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"/>
-    <link href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" rel="stylesheet"/>
-</head>
-<body class="bg-light">
+<head th:replace="~{fragments/layout :: head('Project Trajectory - InnovateCampus')}"></head>
+<body class="bg-hyper-deep text-slate-50 min-h-screen relative flex flex-col">
+    
+    <!-- Hyper-Space Background -->
+    <div th:replace="~{fragments/layout :: background}"></div>
 
-<nav class="navbar navbar-dark bg-dark px-4">
-    <a class="navbar-brand fw-bold">🎓 Campus Innovation Portal</a>
-    <div>
-        <a th:href="@{/projects/list}" class="btn btn-outline-light btn-sm me-2">Projects</a>
-        <a th:href="@{/dashboard}" class="btn btn-outline-light btn-sm me-2">Dashboard</a>
-        <a th:href="@{/auth/logout}" class="btn btn-danger btn-sm">Logout</a>
-    </div>
-</nav>
+    <!-- Navbar -->
+    <nav th:replace="~{fragments/layout :: navbar}"></nav>
 
-<div class="container mt-4">
+    <div class="max-w-7xl mx-auto px-6 py-12 relative z-10 w-full animate-[fade-in_1s_ease-out] mb-20">
 
-    <!-- Project Info -->
-    <div class="card shadow mb-4" data-aos="fade-down">
-        <div class="card-body">
-            <h3 th:text="${project.title}"></h3>
-            <p th:text="${project.description}"></p>
-            <span class="badge bg-primary me-1" th:text="${project.domain}"></span>
-            <span class="badge bg-warning text-dark" th:text="${project.status}"></span>
-        </div>
-    </div>
+        <!-- Project Protocol Header -->
+        <div class="glass rounded-[3rem] p-12 mb-16 relative overflow-hidden group border-white/5">
+            <div class="absolute -top-32 -right-32 w-80 h-80 bg-hyper-cyan/20 rounded-full blur-[100px] pointer-events-none"></div>
+            
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-10 relative z-10">
+                <div class="space-y-4">
+                    <div class="flex items-center gap-3">
+                        <span class="px-4 py-1.5 rounded-lg bg-hyper-cyan/10 text-hyper-cyan text-[10px] font-black uppercase tracking-[0.3em] border border-hyper-cyan/30 shadow-[0_0_15px_rgba(0,242,255,0.2)]" th:text="${project.domain}"></span>
+                        <span class="w-1.5 h-1.5 rounded-full bg-hyper-cyan animate-pulse"></span>
+                    </div>
+                    <h1 class="text-6xl md:text-7xl font-black text-hyper-title leading-none uppercase italic tracking-tighter" th:text="${project.title}"></h1>
+                    <p class="text-xl text-hyper-text/60 font-light max-w-2xl leading-relaxed" th:text="${project.description}"></p>
+                </div>
 
-    <!-- Progress Bar -->
-    <div class="card shadow mb-4" data-aos="fade-up">
-        <div class="card-body">
-            <h5>📈 Project Progress</h5>
-            <div class="progress mb-3" style="height: 25px;">
-                <div class="progress-bar bg-success"
-                     th:style="'width:' + ${project.progress} + '%'"
-                     th:text="${project.progress} + '%'">
+                <div class="flex flex-col items-center md:items-end gap-4">
+                    <div class="px-8 py-3 text-sm font-black rounded-2xl uppercase tracking-[0.2em] border shadow-2xl"
+                         th:classappend="${project.status == 'APPROVED' ? 'bg-hyper-cyan/10 text-hyper-cyan border-hyper-cyan/50 shadow-[0_0_20px_rgba(0,242,255,0.3)]' : (project.status == 'REJECTED' ? 'bg-red-500/10 text-red-400 border-red-500/50' : 'bg-hyper-pink/10 text-hyper-pink border-hyper-pink/50 shadow-[0_0_20px_rgba(255,0,242,0.3)]')}"
+                         th:text="${project.status}">
+                    </div>
                 </div>
             </div>
-            <form th:action="@{/milestone/progress/{id}(id=${project.id})}" method="post">
-                <div class="d-flex gap-2">
-                    <input type="number" name="progress" class="form-control"
-                           min="0" max="100" th:value="${project.progress}"
-                           placeholder="Enter progress %"/>
-                    <button type="submit" class="btn btn-primary">Update</button>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-12">
+            
+            <!-- System Controls -->
+            <div th:if="${isOwner}" class="lg:col-span-4 space-y-10">
+                
+                <!-- Core Progress Module -->
+                <div class="glass rounded-[2rem] p-10 border-white/5 relative overflow-hidden group">
+                    <h5 class="text-xs font-black text-hyper-cyan uppercase tracking-[0.3em] mb-10 flex items-center gap-3">
+                        <span class="w-2 h-2 rounded-full bg-hyper-cyan"></span>
+                        Neural Sync Progress
+                    </h5>
+                    
+                    <div class="relative h-20 bg-hyper-text/5 rounded-3xl overflow-hidden mb-10 border border-hyper-text/5 p-2">
+                        <div class="h-full bg-gradient-to-r from-hyper-cyan to-hyper-violet rounded-2xl transition-all duration-1000 ease-[cubic-bezier(0.23,1,0.32,1)] flex items-center justify-center overflow-hidden shadow-[0_0_30px_rgba(0,242,255,0.4)]"
+                             th:style="'width:' + ${project.progress} + '%'">
+                            <span class="text-sm font-black text-white dark:text-hyper-deep tracking-widest drop-shadow-lg" th:text="${project.progress} + '%'"></span>
+                        </div>
+                    </div>
+
+                    <form th:action="@{/milestone/progress/{id}(id=${project.id})}" method="post" class="flex gap-4">
+                        <input type="number" name="progress" min="0" max="100" th:value="${project.progress}" 
+                               class="glass-input w-24 p-5 rounded-2xl text-center text-xl font-black focus:border-hyper-cyan"/>
+                        <button type="submit" class="flex-grow p-5 rounded-2xl bg-hyper-cyan/10 border border-hyper-cyan/20 text-hyper-cyan font-black uppercase text-xs tracking-widest hover:bg-hyper-cyan hover:text-white transition-all duration-500 hover:shadow-[0_0_30px_rgba(0,242,255,0.4)]">
+                            SYNC RATE
+                        </button>
+                    </form>
                 </div>
-            </form>
+
+                <!-- Milestone Encryption -->
+                <div class="glass rounded-[2rem] p-10 border-hyper-text/5 bg-hyper-text/5">
+                    <h5 class="text-xs font-black text-hyper-pink uppercase tracking-[0.3em] mb-10 flex items-center gap-3">
+                        <span class="w-2 h-2 rounded-full bg-hyper-pink"></span>
+                        Register Node
+                    </h5>
+                    
+                    <form th:action="@{/milestone/add/{id}(id=${project.id})}" th:object="${newMilestone}" method="post" class="space-y-6">
+                        <input type="text" th:field="*{description}" 
+                               class="glass-input w-full p-5 rounded-2xl text-sm font-medium focus:border-hyper-pink placeholder:text-hyper-text/20" 
+                               placeholder="Event description..." required/>
+                        
+                        <input type="date" th:field="*{date}" 
+                               class="glass-input w-full p-5 rounded-2xl text-sm font-black focus:border-hyper-pink appearance-none" required/>
+                        
+                        <button type="submit" class="w-full py-5 rounded-2xl bg-hyper-pink/10 border border-hyper-pink/20 text-hyper-pink font-black uppercase text-xs tracking-widest hover:bg-hyper-pink hover:text-white transition-all duration-500 hover:shadow-[0_0_30px_rgba(255,0,242,0.4)]">
+                            COMMIT TO CHAIN
+                        </button>
+                    </form>
+                </div>
+
+            </div>
+
+            <!-- Trajectory Visualizer -->
+            <div th:class="${isOwner ? 'lg:col-span-8' : 'lg:col-span-12 max-w-4xl mx-auto w-full'}">
+                <div class="glass rounded-[3rem] p-12 border-white/5 h-full relative overflow-hidden">
+                    <div class="absolute -bottom-32 -left-32 w-80 h-80 bg-hyper-violet/10 rounded-full blur-[100px] pointer-events-none"></div>
+                    
+                    <h5 class="text-3xl font-black text-hyper-title italic uppercase tracking-tighter mb-12 flex items-center justify-between">
+                        Deployment History
+                        <span class="text-[10px] font-bold text-hyper-text/40 tracking-[0.4em] not-italic">Temporal Log</span>
+                    </h5>
+                    
+                    <div th:if="${#lists.isEmpty(milestones)}" class="h-64 flex flex-col items-center justify-center opacity-30 text-center">
+                        <div class="text-6xl mb-6">🏜️</div>
+                        <p class="uppercase font-black tracking-widest text-xs">Waiting for Signal Intelligence</p>
+                    </div>
+
+                    <div th:if="${!#lists.isEmpty(milestones)}" class="space-y-8 relative">
+                        <!-- Vertical line -->
+                        <div class="absolute left-6 top-0 bottom-0 w-px bg-gradient-to-b from-hyper-cyan via-hyper-violet to-hyper-pink opacity-30"></div>
+                        
+                        <div th:each="m : ${milestones}" class="relative pl-16 group">
+                            <!-- Dot -->
+                            <div class="absolute left-[21px] top-1 w-2.5 h-2.5 rounded-full bg-hyper-deep border-2 border-hyper-cyan group-hover:bg-hyper-cyan group-hover:scale-150 transition-all duration-500 z-10 shadow-[0_0_10px_rgba(0,242,255,0.5)]"></div>
+                            
+                            <div class="glass p-8 rounded-3xl border-hyper-text/5 group-hover:border-hyper-text/20 transition-all duration-500 bg-white/[0.02]">
+                                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                                    <h4 class="text-xl font-bold text-hyper-title uppercase tracking-tight" th:text="${m.description}"></h4>
+                                    <span class="px-4 py-1.5 rounded-xl bg-hyper-text/5 text-hyper-text/60 text-xs font-black uppercase tracking-[0.2em] border border-hyper-text/5" th:text="${m.date}"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
         </div>
     </div>
 
-    <!-- Add Milestone -->
-    <div class="card shadow mb-4" data-aos="fade-up">
-        <div class="card-body">
-            <h5>➕ Add Milestone</h5>
-            <form th:action="@{/milestone/add/{id}(id=${project.id})}"
-                  th:object="${newMilestone}" method="post">
-                <div class="mb-3">
-                    <input type="text" th:field="*{description}"
-                           class="form-control" placeholder="Milestone description" required/>
-                </div>
-                <div class="mb-3">
-                    <input type="date" th:field="*{date}" class="form-control" required/>
-                </div>
-                <button type="submit" class="btn btn-success">Add Milestone</button>
-            </form>
-        </div>
-    </div>
-
-    <!-- Milestones List -->
-    <div class="card shadow" data-aos="fade-up">
-        <div class="card-body">
-            <h5>📋 Milestones</h5>
-            <ul class="list-group mt-3">
-                <li class="list-group-item d-flex justify-content-between"
-                    th:each="m : ${milestones}">
-                    <span th:text="${m.description}"></span>
-                    <span class="badge bg-secondary" th:text="${m.date}"></span>
-                </li>
-            </ul>
-            <p class="text-muted mt-2" th:if="${#lists.isEmpty(milestones)}">
-                No milestones added yet.
-            </p>
-        </div>
-    </div>
-
-</div>
-
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
-<script>AOS.init();</script>
+    <!-- Scripts -->
+    <div th:replace="~{fragments/layout :: scripts}"></div>
 </body>
 </html>

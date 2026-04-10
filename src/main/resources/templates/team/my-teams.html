@@ -1,41 +1,81 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head>
-    <title>My Teams - Campus Innovation Portal</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"/>
-</head>
-<body class="bg-light">
+<head th:replace="~{fragments/layout :: head('My Syncs - InnovateCampus')}"></head>
+<body class="bg-hyper-deep text-slate-50 min-h-screen relative flex flex-col">
+    
+    <!-- Background -->
+    <div th:replace="~{fragments/layout :: background}"></div>
 
-<nav class="navbar navbar-dark bg-dark px-4">
-    <a class="navbar-brand fw-bold">🎓 Campus Innovation Portal</a>
-    <div>
-        <a th:href="@{/projects/list}" class="btn btn-outline-light btn-sm me-2">All Projects</a>
-        <a th:href="@{/dashboard}" class="btn btn-outline-light btn-sm me-2">Dashboard</a>
-        <a th:href="@{/auth/logout}" class="btn btn-danger btn-sm">Logout</a>
-    </div>
-</nav>
+    <!-- Navbar -->
+    <nav th:replace="~{fragments/layout :: navbar}"></nav>
 
-<div class="container mt-5">
-    <h2>My Teams & Join Requests</h2>
+    <div class="max-w-6xl mx-auto px-6 py-12 relative z-10 w-full animate-[fade-in_1s_ease-out]">
+        
+        <div class="mb-16 border-b border-white/5 pb-12">
+            <h1 class="text-6xl md:text-7xl font-black text-white leading-none uppercase italic tracking-tighter">
+                My <span class="animate-gradient text-hyper-cyan">Syncs</span>
+            </h1>
+            <p class="text-slate-500 mt-4 text-sm font-bold uppercase tracking-[0.4em]">Track your Protocol Connection Statuses</p>
+        </div>
 
-    <div th:if="${myTeams.isEmpty()}" class="alert alert-info">
-        You have not joined or created any team yet.
-    </div>
+        <!-- Empty State -->
+        <div th:if="${#lists.isEmpty(myTeams)}" class="glass rounded-[3rem] p-24 text-center border-white/5 opacity-70">
+            <div class="text-7xl mb-6 animate-pulse">📡</div>
+            <h3 class="text-3xl font-black text-white uppercase tracking-tighter mb-2">No Active Links</h3>
+            <p class="text-slate-400 font-light mb-8">You haven't requested to sync with any protocols yet.</p>
+            <a th:href="@{/projects/list}" class="px-8 py-3 rounded-xl bg-hyper-cyan/10 text-hyper-cyan border border-hyper-cyan/30 font-black uppercase tracking-widest text-[10px] hover:bg-hyper-cyan hover:text-deep transition-all">Explore Gallery</a>
+        </div>
 
-    <div class="row" th:unless="${myTeams.isEmpty()}">
-        <div class="col-md-6 mb-4" th:each="member : ${myTeams}">
-            <div class="card">
-                <div class="card-body">
-                    <h5 th:text="${member.project.title}"></h5>
-                    <p>Status: <span class="badge"
-                                     th:classappend="${member.status == 'APPROVED'} ? 'bg-success' : 'bg-warning'"
-                                     th:text="${member.status}"></span></p>
+        <!-- Sync Grid -->
+        <div th:if="${!#lists.isEmpty(myTeams)}" class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div th:each="team : ${myTeams}" class="glass p-8 rounded-[2rem] border border-white/10 group hover:border-white/30 transition-all duration-500">
+                
+                <div class="flex justify-between items-start mb-6">
+                    <div>
+                        <div class="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] mb-1">Target Protocol</div>
+                        <h3 class="text-3xl font-bold text-white tracking-tight leading-none group-hover:text-hyper-cyan transition-colors" th:text="${team.project.title}"></h3>
+                    </div>
                 </div>
+
+                <div class="bg-black/40 rounded-xl p-6 mb-6 border border-white/5">
+                    <div class="flex items-center gap-4 mb-4 pb-4 border-b border-white/5">
+                        <div class="w-10 h-10 rounded-full flex items-center justify-center font-black text-white bg-hyper-violet/30 border border-hyper-violet/50 shadow-[0_0_15px_rgba(112,0,255,0.4)]">👑</div>
+                        <div>
+                            <div class="text-[9px] font-black text-slate-500 uppercase tracking-widest leading-none mb-1">Protocol Creator</div>
+                            <div class="text-white font-bold tracking-wide" th:text="${team.project.createdBy.name}"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-center justify-between">
+                        <span class="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Connection Status:</span>
+                        
+                        <!-- Status Pills -->
+                        <span th:if="${team.status == 'PENDING'}" class="px-4 py-1.5 rounded-lg bg-hyper-pink/10 text-hyper-pink border border-hyper-pink/30 text-[10px] font-black uppercase tracking-[0.2em] shadow-[0_0_15px_rgba(255,0,242,0.2)] animate-pulse">
+                            AWAITING APPROVAL
+                        </span>
+                        
+                        <span th:if="${team.status == 'APPROVED'}" class="px-4 py-1.5 rounded-lg bg-hyper-cyan/10 text-hyper-cyan border border-hyper-cyan/30 text-[10px] font-black uppercase tracking-[0.2em] shadow-[0_0_15px_rgba(0,242,255,0.2)]">
+                            SYNC ESTABLISHED
+                        </span>
+                        
+                        <span th:if="${team.status == 'REJECTED'}" class="px-4 py-1.5 rounded-lg bg-red-500/10 text-red-500 border border-red-500/30 text-[10px] font-black uppercase tracking-[0.2em]">
+                            LINK DISCONNECTED
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Action button if approved -->
+                <a th:if="${team.status == 'APPROVED'}" th:href="@{/milestone/{projectId}(projectId=${team.project.id})}" 
+                   class="w-full py-4 rounded-xl glass hover:bg-white/10 text-white font-black uppercase text-[10px] tracking-widest border border-white/10 flex items-center justify-center gap-2 group/btn transition-colors">
+                    <span>📋</span> View Protocol Milestones
+                </a>
+                
             </div>
         </div>
+        
     </div>
-</div>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Scripts -->
+    <div th:replace="~{fragments/layout :: scripts}"></div>
 </body>
 </html>

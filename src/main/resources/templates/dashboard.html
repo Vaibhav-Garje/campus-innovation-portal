@@ -1,115 +1,175 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org"
-      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
-<head>
-    <title>Student Dashboard</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"/>
-    <link href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" rel="stylesheet"/>
-    <style>
-        .card {
-            transition: all 0.3s ease;
-            cursor: pointer;
-            height: 100%;
-        }
-        .card:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 10px 20px rgba(0,0,0,0.15) !important;
-        }
-    </style>
-</head>
-<body class="bg-light">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/layout :: head('Neural Dashboard - InnovateCampus')}"></head>
+<body class="bg-hyper-deep text-slate-50 min-h-screen relative flex flex-col">
+    
+    <!-- Background -->
+    <div th:replace="~{fragments/layout :: background}"></div>
 
-<nav class="navbar navbar-dark bg-dark px-4">
-    <a class="navbar-brand fw-bold">🎓 Campus Innovation Portal</a>
-    <div>
-        <a th:href="@{/projects/list}" class="btn btn-outline-light btn-sm me-2">All Projects</a>
-        <a th:href="@{/projects/submit}" class="btn btn-success btn-sm me-2">Submit Project</a>
-        <a th:href="@{/auth/logout}" class="btn btn-danger btn-sm">Logout</a>
-    </div>
-</nav>
+    <!-- Navbar -->
+    <nav th:replace="~{fragments/layout :: navbar}"></nav>
 
-<div class="container mt-5">
-
-    <div class="bg-white p-5 rounded shadow mb-5" data-aos="fade-down">
-        <h1 class="display-5 fw-bold">Welcome Back! 🚀</h1>
-        <p class="lead">Submit ideas, collaborate with teammates, and get your projects approved.</p>
-        <hr/>
-        <a th:href="@{/projects/submit}" class="btn btn-primary btn-lg me-3">Submit New Project</a>
-        <a th:href="@{/projects/list}" class="btn btn-outline-primary btn-lg">Browse All Projects</a>
-    </div>
-
-    <!-- Clickable Cards Section -->
-    <div class="row mt-4">
-        <!-- Submit Ideas Card -->
-        <div class="col-md-4 mb-4" data-aos="fade-up" data-aos-delay="100">
-            <a th:href="@{/projects/submit}" class="text-decoration-none">
-                <div class="card text-white bg-primary shadow text-center p-4">
-                    <h1 class="mb-3">💡</h1>
-                    <h5 class="card-title">Submit Ideas</h5>
-                    <p class="card-text">Share your innovative project ideas with the campus</p>
+    <div class="max-w-7xl mx-auto px-6 py-12 relative z-10 w-full animate-[fade-in_1s_ease-out]">
+        
+        <!-- Welcome Hero HUD -->
+        <div class="glass rounded-[3rem] p-12 mb-16 relative overflow-hidden group border-white/5 shadow-[0_0_50px_rgba(0,0,0,0.5)]">
+            <div class="absolute -top-32 -right-32 w-96 h-96 bg-hyper-violet rounded-full mix-blend-screen filter blur-[120px] opacity-20 group-hover:opacity-40 transition-opacity duration-1000"></div>
+            <div class="absolute -bottom-32 -left-32 w-96 h-96 bg-hyper-cyan rounded-full mix-blend-screen filter blur-[120px] opacity-20 group-hover:opacity-40 transition-opacity duration-1000"></div>
+            
+            <div class="relative z-10">
+                <div class="flex items-center gap-4 mb-6">
+                    <span class="px-4 py-1.5 rounded-full bg-hyper-cyan/10 text-hyper-cyan text-xs font-black uppercase tracking-[0.2em] border border-hyper-cyan/30 shadow-[0_0_15px_rgba(0,242,255,0.2)]">
+                        System Online
+                    </span>
+                    <span class="w-2 h-2 rounded-full bg-hyper-cyan animate-pulse"></span>
                 </div>
-            </a>
+                
+                <h1 class="text-6xl md:text-7xl font-black text-hyper-title mb-6 tracking-tighter uppercase italic leading-none">
+                    Welcome to the <br/>
+                    <span class="animate-gradient">Neural Dashboard.</span>
+                </h1>
+                
+                <p class="text-2xl text-hyper-text/60 font-light mb-12 max-w-2xl leading-relaxed">
+                    Access your project protocol, recruit elite talent, and track your innovation trajectory in real-time.
+                </p>
+                
+                <div class="flex flex-wrap gap-6">
+                    <a th:href="@{/projects/submit}" class="px-10 py-4 rounded-2xl bg-gradient-to-r from-hyper-violet to-hyper-pink text-white font-black uppercase tracking-widest hover:shadow-[0_0_40px_rgba(112,0,255,0.5)] hover:-translate-y-1 transition-all">
+                        Initialize Project
+                    </a>
+                    <a th:href="@{/projects/list}" class="px-10 py-4 rounded-2xl glass hover:bg-hyper-text/10 text-hyper-text font-black uppercase tracking-widest border border-hyper-text/10 hover:border-hyper-cyan/50 hover:-translate-y-1 transition-all">
+                        Explore Protocols
+                    </a>
+                </div>
+            </div>
         </div>
 
-        <!-- Collaborate Card (Updated) -->
-        <div class="col-md-4 mb-4" data-aos="fade-up" data-aos-delay="200">
-            <a th:href="@{/team/create}" class="text-decoration-none">
-                <div class="card text-white bg-success shadow text-center p-4">
-                    <h1 class="mb-3">👥</h1>
-                    <h5 class="card-title">Collaborate</h5>
-                    <p class="card-text">Create your own team or join existing teams</p>
+        <!-- Metric Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
+            <div class="glass p-8 rounded-3xl border-white/5 hover:border-hyper-cyan/40 transition-all duration-500 group">
+                <div class="flex items-center justify-between mb-8">
+                    <div class="text-4xl">🛸</div>
+                    <div class="text-hyper-cyan font-black text-xs uppercase tracking-widest">Active Status</div>
                 </div>
-            </a>
+                <h3 class="text-4xl font-black text-hyper-title mb-2" th:text="${approvedCount}">0</h3>
+                <p class="text-hyper-text/50 uppercase text-xs font-bold tracking-widest">Approved Deployments</p>
+                <div class="mt-8 h-1 w-full bg-hyper-text/5 rounded-full overflow-hidden">
+                    <div class="h-full bg-hyper-cyan" style="width: 70%"></div>
+                </div>
+            </div>
+
+            <div class="glass p-8 rounded-3xl border-white/5 hover:border-hyper-pink/40 transition-all duration-500 group">
+                <div class="flex items-center justify-between mb-8">
+                    <div class="text-4xl">📡</div>
+                    <div class="text-hyper-pink font-black text-xs uppercase tracking-widest">Signal Sync</div>
+                </div>
+                <h3 class="text-4xl font-black text-hyper-title mb-2" th:text="${pendingCount}">0</h3>
+                <p class="text-hyper-text/50 uppercase text-xs font-bold tracking-widest">Pending Approvals</p>
+                <div class="mt-8 h-1 w-full bg-hyper-text/5 rounded-full overflow-hidden">
+                    <div class="h-full bg-hyper-pink" style="width: 40%"></div>
+                </div>
+            </div>
+
+            <div class="glass p-8 rounded-3xl border-white/5 hover:border-hyper-violet/40 transition-all duration-500 group">
+                <div class="flex items-center justify-between mb-8">
+                    <div class="text-4xl">🧬</div>
+                    <div class="text-hyper-violet font-black text-xs uppercase tracking-widest">Neural Link</div>
+                </div>
+                <h3 class="text-4xl font-black text-hyper-title mb-2" th:text="${rejectedCount}">0</h3>
+                <p class="text-hyper-text/50 uppercase text-xs font-bold tracking-widest">Revision Phase</p>
+                <div class="mt-8 h-1 w-full bg-hyper-text/5 rounded-full overflow-hidden">
+                    <div class="h-full bg-hyper-violet" style="width: 20%"></div>
+                </div>
+            </div>
         </div>
 
-        <!-- Get Approved Card -->
-        <div class="col-md-4 mb-4" data-aos="fade-up" data-aos-delay="300">
-            <a th:href="@{/projects/list}" class="text-decoration-none">
-                <div class="card text-white bg-warning shadow text-center p-4">
-                    <h1 class="mb-3">🏆</h1>
-                    <h5 class="card-title">Get Approved</h5>
-                    <p class="card-text">Track status and get faculty approval</p>
+        <!-- Data Visualization Section -->
+        <div class="glass rounded-[3rem] p-12 border-white/5 shadow-2xl relative overflow-hidden">
+            <div class="flex items-center justify-between mb-12">
+                <div>
+                    <h2 class="text-3xl font-black text-hyper-title uppercase italic tracking-tighter">System Analytics</h2>
+                    <p class="text-hyper-text/50 text-sm font-bold uppercase tracking-widest mt-2">Project Trajectory Visualization</p>
                 </div>
-            </a>
+                <div class="flex gap-2">
+                    <div class="w-3 h-3 rounded-full bg-hyper-cyan"></div>
+                    <div class="w-3 h-3 rounded-full bg-hyper-pink"></div>
+                    <div class="w-3 h-3 rounded-full bg-hyper-violet"></div>
+                </div>
+            </div>
+            
+            <div class="w-full h-[400px] relative">
+                <canvas id="projectChart"></canvas>
+            </div>
         </div>
     </div>
 
-    <!-- Project Statistics -->
-    <div class="bg-white p-4 rounded shadow mt-4" data-aos="fade-up">
-        <h4 class="mb-3">📊 Project Statistics</h4>
-        <canvas id="projectChart" height="100"></canvas>
-    </div>
+    <!-- Scripts -->
+    <div th:replace="~{fragments/layout :: scripts}"></div>
+    <!-- Chart JS -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script th:inline="javascript">
+        const ctx = document.getElementById('projectChart').getContext('2d');
+        
+        // Get CSS variables
+        const textColor = getComputedStyle(document.body).getPropertyValue('--text-muted').trim();
+        const gridColor = getComputedStyle(document.body).getPropertyValue('--glass-border').trim();
 
-</div>
+        Chart.defaults.color = textColor;
+        Chart.defaults.font.family = "'Outfit', sans-serif";
+        Chart.defaults.font.weight = 'bold';
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script th:inline="javascript">
-    AOS.init();
-
-    const ctx = document.getElementById('projectChart').getContext('2d');
-    new Chart(ctx, {
-        type: 'bar',
-        data: {
-            labels: ['Pending', 'Approved', 'Rejected'],
-            datasets: [{
-                label: 'Number of Projects',
-                data: [
-                    /*[[${pendingCount}]]*/ 0,
-                    /*[[${approvedCount}]]*/ 0,
-                    /*[[${rejectedCount}]]*/ 0
-                ],
-                backgroundColor: ['#ffc107', '#198754', '#dc3545']
-            }]
-        },
-        options: {
-            responsive: true,
-            scales: {
-                y: { beginAtZero: true }
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: ['PHASE 01', 'PHASE 02', 'PHASE 03'],
+                datasets: [{
+                    label: 'Innovation Density',
+                    data: [
+                        /*[[${pendingCount}]]*/ 5,
+                        /*[[${approvedCount}]]*/ 12,
+                        /*[[${rejectedCount}]]*/ 2
+                    ],
+                    borderColor: '#00f2ff',
+                    backgroundColor: 'rgba(0, 242, 255, 0.1)',
+                    fill: true,
+                    tension: 0.4,
+                    borderWidth: 4,
+                    pointBackgroundColor: '#00f2ff',
+                    pointRadius: 6,
+                    pointHoverRadius: 10,
+                    shadowColor: 'rgba(0, 242, 255, 0.5)',
+                    shadowBlur: 20
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        backgroundColor: '#020617',
+                        titleFont: { size: 14, weight: 'bold' },
+                        bodyFont: { size: 16 },
+                        padding: 16,
+                        displayColors: false,
+                        cornerRadius: 12,
+                        borderColor: 'rgba(255, 255, 255, 0.1)',
+                        borderWidth: 1
+                    }
+                },
+                scales: {
+                    y: { 
+                        beginAtZero: true,
+                        grid: { color: gridColor },
+                        border: { display: false }
+                    },
+                    x: {
+                        grid: { display: false },
+                        border: { display: false }
+                    }
+                }
             }
-        }
-    });
-</script>
+        });
+    </script>
 </body>
 </html>

@@ -1,32 +1,65 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head>
-  <title>Login</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"/>
-</head>
-<body class="bg-light">
-<div class="container mt-5">
-  <div class="row justify-content-center">
-    <div class="col-md-4">
-      <div class="card shadow">
-        <div class="card-body p-4">
-          <h3 class="text-center mb-4">🎓 Campus Innovation Portal</h3>
-          <h5 class="text-center mb-3">Login</h5>
-          <form th:action="@{/auth/login}" method="post">
-            <div class="mb-3">
-              <input type="text" name="username" class="form-control" placeholder="Full Name" required/>
+<head th:replace="~{fragments/layout :: head('Neural Access - InnovateCampus')}"></head>
+<body class="bg-hyper-deep text-slate-50 min-h-screen relative flex flex-col">
+    
+    <!-- Hyper-Space Background -->
+    <div th:replace="~{fragments/layout :: background}"></div>
+
+    <!-- Login Centered Container -->
+    <div class="flex-grow flex items-center justify-center relative z-10 px-4 py-12">
+        <div class="glass w-full max-w-lg rounded-[3rem] p-12 shadow-[0_0_100px_rgba(0,0,0,0.5)] relative overflow-hidden border-hyper-text/5 bg-hyper-text/5">
+            <!-- Decorative Glows -->
+            <div class="absolute -top-32 -right-32 w-80 h-80 bg-hyper-violet rounded-full mix-blend-screen filter blur-[100px] opacity-20 pointer-events-none animate-pulse"></div>
+            <div class="absolute -bottom-32 -left-32 w-80 h-80 bg-hyper-cyan rounded-full mix-blend-screen filter blur-[100px] opacity-20 pointer-events-none animate-pulse" style="animation-delay: 1s;"></div>
+            
+            <div class="text-center mb-12 relative z-10">
+                <div class="inline-block px-4 py-1.5 rounded-lg bg-hyper-cyan/10 text-hyper-cyan text-[10px] font-black uppercase tracking-[0.4em] border border-hyper-cyan/30 mb-6">Security Terminal</div>
+                <h1 class="text-5xl font-black text-hyper-title leading-none uppercase italic tracking-tighter">
+                    Access <br/>
+                    <span class="animate-gradient">Granted?</span>
+                </h1>
+                <p class="text-hyper-text/50 font-bold uppercase text-[10px] tracking-[0.3em] mt-4">Verifying Neural Credentials...</p>
             </div>
-            <div class="mb-3">
-              <input type="password" name="password" class="form-control" placeholder="Password" required/>
+
+            <form th:action="@{/auth/login}" method="post" class="space-y-8 relative z-10">
+                
+                <div class="space-y-3">
+                    <label class="px-2 text-[10px] font-black text-hyper-text/40 uppercase tracking-[0.2em]">Identification</label>
+                    <div class="relative group">
+                        <input type="text" name="username" class="glass-input w-full p-5 rounded-2xl text-lg font-bold transition-all focus:border-hyper-cyan focus:shadow-[0_0_20px_rgba(0,242,255,0.2)] placeholder:text-hyper-text/20" placeholder="Username / Full Name" required/>
+                    </div>
+                </div>
+
+                <div class="space-y-3">
+                    <label class="px-2 text-[10px] font-black text-hyper-text/40 uppercase tracking-[0.2em]">Secret Key</label>
+                    <div class="relative group">
+                        <input type="password" name="password" class="glass-input w-full p-5 rounded-2xl text-lg font-bold transition-all focus:border-hyper-violet focus:shadow-[0_0_20px_rgba(112,0,255,0.2)] placeholder:text-hyper-text/20" placeholder="••••••••" required/>
+                    </div>
+                </div>
+
+                <!-- Error Messages -->
+                <div th:if="${param.error}" class="glass border-red-500/20 bg-red-500/5 text-red-500 text-xs font-bold rounded-2xl p-5 flex items-center justify-center gap-3 animate-pulse uppercase tracking-widest text-center shadow-[0_0_15px_rgba(239,68,68,0.2)]">
+                    Identity not matched. Re-authenticate.
+                </div>
+
+                <div th:if="${param.logout}" class="glass border-hyper-cyan/20 bg-hyper-cyan/5 text-hyper-cyan text-xs font-bold rounded-2xl p-5 flex items-center justify-center gap-3 uppercase tracking-widest text-center">
+                    Session Terminated Securely.
+                </div>
+
+                <button type="submit" class="w-full mt-12 py-5 rounded-2xl bg-gradient-to-r from-hyper-cyan to-hyper-violet text-white dark:text-hyper-deep font-black text-xl uppercase tracking-[0.2em] shadow-[0_0_30px_rgba(0,242,255,0.3)] hover:shadow-[0_0_50px_rgba(112,0,255,0.5)] hover:-translate-y-1 transition-all duration-300">
+                    AUTHENTICATE
+                </button>
+            </form>
+
+            <div class="mt-12 text-center relative z-10 text-[10px] font-black text-hyper-text/40 uppercase tracking-[0.3em]">
+                New Entity? 
+                <a th:href="@{/auth/register}" class="text-hyper-cyan border-b border-hyper-cyan/30 hover:border-hyper-cyan transition-all ml-1">Request Initialization</a>
             </div>
-            <button type="submit" class="btn btn-primary w-100">Login</button>
-          </form>
-          <p class="text-center mt-3">Don't have an account? <a th:href="@{/auth/register}">Register</a></p>
         </div>
-      </div>
     </div>
-  </div>
-</div>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Scripts -->
+    <div th:replace="~{fragments/layout :: scripts}"></div>
 </body>
 </html>

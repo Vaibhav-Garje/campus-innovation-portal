@@ -1,44 +1,73 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head>
-    <title>Register</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"/>
-</head>
-<body class="bg-light">
-<div class="container mt-5">
-    <div class="row justify-content-center">
-        <div class="col-md-5">
-            <div class="card shadow">
-                <div class="card-body p-4">
-                    <h3 class="text-center mb-4">🎓 Campus Innovation Portal</h3>
-                    <h5 class="text-center mb-3">Register</h5>
-                    <form th:action="@{/auth/register}" method="post">
-                        <div class="mb-3">
-                            <input type="text" name="name" class="form-control" placeholder="Full Name" required/>
-                        </div>
-                        <div class="mb-3">
-                            <input type="email" name="email" class="form-control" placeholder="Email" required/>
-                        </div>
-                        <div class="mb-3">
-                            <input type="password" name="password" class="form-control" placeholder="Password" required/>
-                        </div>
-                        <div class="mb-3">
-                            <select name="role" class="form-select">
-                                <option value="STUDENT">Student</option>
-                                <option value="FACULTY">Faculty</option>
-                            </select>
-                        </div>
-                        <div class="mb-3">
-                            <input type="text" name="department" class="form-control" placeholder="Department" required/>
-                        </div>
-                        <button type="submit" class="btn btn-success w-100">Register</button>
-                    </form>
-                    <p class="text-center mt-3">Already have an account? <a th:href="@{/auth/login}">Login</a></p>
+<head th:replace="~{fragments/layout :: head('Initialize Account - InnovateCampus')}"></head>
+<body class="bg-hyper-deep text-slate-50 min-h-screen relative flex flex-col">
+    
+    <!-- Hyper-Space Background -->
+    <div th:replace="~{fragments/layout :: background}"></div>
+
+    <!-- Register Centered Container -->
+    <div class="flex-grow flex items-center justify-center relative z-10 px-4 py-12">
+        <div class="glass w-full max-w-2xl rounded-[3rem] p-12 shadow-[0_0_100px_rgba(0,0,0,0.5)] relative overflow-hidden border-hyper-text/5 bg-hyper-text/5">
+            <!-- Decorative Glows -->
+            <div class="absolute -top-32 -right-32 w-80 h-80 bg-hyper-cyan rounded-full mix-blend-screen filter blur-[100px] opacity-20 pointer-events-none animate-pulse"></div>
+            <div class="absolute -bottom-32 -left-32 w-80 h-80 bg-hyper-violet rounded-full mix-blend-screen filter blur-[100px] opacity-20 pointer-events-none animate-pulse" style="animation-delay: 1.5s;"></div>
+            
+            <div class="text-center mb-12 relative z-10">
+                <div class="inline-block px-4 py-1.5 rounded-lg bg-hyper-violet/10 text-hyper-violet text-[10px] font-black uppercase tracking-[0.4em] border border-hyper-violet/30 mb-6 shadow-[0_0_15px_rgba(112,0,255,0.2)]">Protocol Initialization</div>
+                <h1 class="text-5xl font-black text-hyper-title leading-none uppercase italic tracking-tighter">
+                    Join the <br/>
+                    <span class="animate-gradient">Network.</span>
+                </h1>
+                <p class="text-hyper-text/50 font-bold uppercase text-[10px] tracking-[0.3em] mt-4">Creating your Neural Signature...</p>
+            </div>
+
+            <form th:action="@{/auth/register}" method="post" class="space-y-6 relative z-10">
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="space-y-2">
+                        <label class="px-2 text-[10px] font-black text-hyper-text/40 uppercase tracking-[0.2em]">Identification</label>
+                        <input type="text" name="name" class="glass-input w-full p-4 rounded-xl text-sm font-bold transition-all focus:border-hyper-cyan placeholder:text-hyper-text/20" placeholder="Full Name" required/>
+                    </div>
+                    <div class="space-y-2">
+                        <label class="px-2 text-[10px] font-black text-hyper-text/40 uppercase tracking-[0.2em]">Neural Email</label>
+                        <input type="email" name="email" class="glass-input w-full p-4 rounded-xl text-sm font-bold transition-all focus:border-hyper-cyan placeholder:text-hyper-text/20" placeholder="Email Address" required/>
+                    </div>
                 </div>
+
+                <div class="space-y-2">
+                    <label class="px-2 text-[10px] font-black text-hyper-text/40 uppercase tracking-[0.2em]">Secret Key</label>
+                    <input type="password" name="password" class="glass-input w-full p-4 rounded-xl text-sm font-bold transition-all focus:border-hyper-violet placeholder:text-hyper-text/20" placeholder="Create Password" required/>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="space-y-2 relative">
+                        <label class="px-2 text-[10px] font-black text-hyper-text/40 uppercase tracking-[0.2em]">Designation</label>
+                        <select name="role" class="glass-input w-full p-4 rounded-xl text-sm font-bold appearance-none bg-transparent cursor-pointer">
+                            <option value="STUDENT">Student Protocol</option>
+                            <option value="FACULTY">Faculty Controller</option>
+                        </select>
+                        <div class="absolute right-4 bottom-4 pointer-events-none text-hyper-text/40">▼</div>
+                    </div>
+                    <div class="space-y-2">
+                        <label class="px-2 text-[10px] font-black text-hyper-text/40 uppercase tracking-[0.2em]">Sector/Dept</label>
+                        <input type="text" name="department" class="glass-input w-full p-4 rounded-xl text-sm font-bold transition-all focus:border-hyper-cyan placeholder:text-hyper-text/20" placeholder="e.g. CS / Engineering" required/>
+                    </div>
+                </div>
+
+                <button type="submit" class="w-full mt-10 py-5 rounded-2xl bg-gradient-to-r from-hyper-violet to-hyper-pink text-white font-black text-xl uppercase tracking-[0.2em] shadow-[0_0_30px_rgba(112,0,255,0.3)] hover:shadow-[0_0_50px_rgba(255,0,242,0.5)] hover:-translate-y-1 transition-all duration-500">
+                    INITIALIZE PROFILE
+                </button>
+            </form>
+
+            <div class="mt-10 text-center relative z-10 text-[10px] font-black text-hyper-text/40 uppercase tracking-[0.3em]">
+                Entity already synced? 
+                <a th:href="@{/auth/login}" class="text-hyper-cyan border-b border-hyper-cyan/30 hover:border-hyper-cyan transition-all ml-1">Authenticate Now</a>
             </div>
         </div>
     </div>
-</div>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Scripts -->
+    <div th:replace="~{fragments/layout :: scripts}"></div>
 </body>
 </html>

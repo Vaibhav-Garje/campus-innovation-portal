@@ -1,75 +1,108 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head>
-    <title>Project List</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"/>
-    <style>
-        .card { transition: transform 0.2s; }
-        .card:hover { transform: translateY(-5px); }
-    </style>
-</head>
-<body class="bg-light">
+<head th:replace="~{fragments/layout :: head('Innovation Gallery - InnovateCampus')}"></head>
+<body class="bg-hyper-deep text-slate-50 min-h-screen relative flex flex-col">
+    
+    <!-- Background -->
+    <div th:replace="~{fragments/layout :: background}"></div>
 
-<nav class="navbar navbar-dark bg-dark px-4">
-    <a class="navbar-brand fw-bold">🎓 Campus Innovation Portal</a>
-    <div>
-        <a th:href="@{/projects/submit}" class="btn btn-success btn-sm me-2">Submit Project</a>
-        <a th:href="@{/dashboard}" class="btn btn-outline-light btn-sm me-2">Dashboard</a>
-        <a th:href="@{/auth/logout}" class="btn btn-danger btn-sm">Logout</a>
-    </div>
-</nav>
+    <!-- Navbar -->
+    <nav th:replace="~{fragments/layout :: navbar}"></nav>
 
-<div class="container mt-4">
+    <div class="max-w-7xl mx-auto px-6 py-12 relative z-10 w-full animate-[fade-in_1s_ease-out]">
+        
+        <!-- Flash Messages -->
+        <div th:if="${success}" class="glass border-hyper-cyan/50 bg-hyper-cyan/10 text-hyper-cyan p-6 rounded-3xl mb-12 flex justify-between items-center shadow-[0_0_30px_rgba(0,242,255,0.2)] animate-pulse">
+            <span class="font-black uppercase tracking-widest" th:text="${success}"></span>
+            <button onclick="this.parentElement.style.display='none'" class="text-hyper-cyan hover:scale-125 transition-transform">&times;</button>
+        </div>
 
-    <!-- Success / Error Messages -->
-    <div th:if="${success}" class="alert alert-success alert-dismissible">
-        <span th:text="${success}"></span>
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-    </div>
-    <div th:if="${error}" class="alert alert-danger alert-dismissible">
-        <span th:text="${error}"></span>
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-    </div>
-    <div th:if="${info}" class="alert alert-info alert-dismissible">
-        <span th:text="${info}"></span>
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-    </div>
+        <div class="flex flex-col md:flex-row justify-between items-center mb-20 gap-8 border-b border-white/5 pb-12">
+            <div>
+                <h1 class="text-6xl md:text-7xl font-black text-hyper-title leading-none uppercase italic tracking-tighter">
+                    Innovation <br/>
+                    <span class="animate-gradient">Protocols</span>
+                </h1>
+                <p class="text-hyper-text/50 mt-4 text-sm font-bold uppercase tracking-[0.4em]">Decentralized Idea Repository</p>
+            </div>
+            <a th:href="@{/projects/submit}" class="px-10 py-5 rounded-2xl bg-gradient-to-r from-hyper-violet to-hyper-pink text-white font-black uppercase tracking-widest shadow-[0_0_30px_rgba(112,0,255,0.4)] hover:shadow-[0_0_50px_rgba(255,0,242,0.6)] hover:-translate-y-2 transition-all group">
+                <span class="group-hover:rotate-90 inline-block transition-transform duration-500">➕</span> Pitch New Protocol
+            </a>
+        </div>
 
-    <h2 class="mb-4">All Projects</h2>
-    <div class="row">
-        <div class="col-md-6 mb-4" th:each="project : ${projects}">
-            <div class="card shadow-sm h-100">
-                <div class="card-body">
-                    <h5 class="card-title" th:text="${project.title}"></h5>
-                    <p class="card-text" th:text="${project.description}"></p>
-                    <div class="mb-3">
-                        <span class="badge bg-primary me-1" th:text="${project.domain}"></span>
-                        <span class="badge bg-warning text-dark me-1" th:text="${project.status}"></span>
-                        <span class="badge bg-success">👍 <span th:text="${project.voteCount}"></span> Votes</span>
-                    </div>
+        <!-- Project Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+            <!-- Iterate over projects -->
+            <div th:each="project : ${projects}" class="glass rounded-[2.5rem] p-8 flex flex-col h-full group relative overflow-hidden transition-all duration-700 hover:border-white/20 border-white/5 hover:translate-y-[-10px]">
+                <!-- Status Glow -->
+                <div class="absolute -top-20 -right-20 w-40 h-40 rounded-full blur-[60px] opacity-20 group-hover:opacity-60 transition-all duration-1000"
+                     th:classappend="${project.status == 'APPROVED' ? 'bg-hyper-cyan' : (project.status == 'REJECTED' ? 'bg-red-500' : 'bg-hyper-pink')}">
                 </div>
-                <div class="card-footer d-flex gap-2 flex-wrap">
 
-                    <!-- Vote -->
-                    <form th:action="@{/vote/{projectId}(projectId=${project.id})}" method="post" style="display:inline;">
-                        <button type="submit" class="btn btn-outline-primary btn-sm">👍 Vote</button>
-                    </form>
+                <!-- Status Badge -->
+                <div class="absolute top-6 right-6 px-4 py-1.5 text-[10px] font-black rounded-lg uppercase tracking-[0.2em] border shadow-2xl z-20"
+                     th:classappend="${project.status == 'APPROVED' ? 'bg-hyper-cyan/10 text-hyper-cyan border-hyper-cyan/40' : (project.status == 'REJECTED' ? 'bg-red-500/10 text-red-400 border-red-500/40' : 'bg-hyper-pink/10 text-hyper-pink border-hyper-pink/40')}"
+                     th:text="${project.status}">
+                </div>
 
-                    <!-- Join Team -->
-                    <form th:action="@{/team/join/{projectId}(projectId=${project.id})}" method="post" style="display:inline;">
-                        <button type="submit" class="btn btn-outline-success btn-sm">🤝 Join Team</button>
-                    </form>
+                <div class="mb-8 pt-4 relative z-10">
+                    <span class="inline-block px-4 py-1.5 rounded-lg bg-hyper-text/5 text-hyper-text/60 text-[10px] font-black uppercase tracking-[0.3em] mb-6 border border-hyper-text/10" th:text="${project.domain}"></span>
+                    <h3 class="text-3xl font-black text-hyper-title mb-4 uppercase tracking-tighter group-hover:animate-gradient leading-none transition-all" th:text="${project.title}"></h3>
+                    <p class="text-hyper-text/70 line-clamp-3 text-sm leading-relaxed font-light" th:text="${project.description}"></p>
+                </div>
+                
+                <div class="flex-grow"></div>
+
+                <div class="mt-8 pt-8 border-t border-white/5 flex flex-col gap-6 relative z-10">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-full bg-hyper-pink/10 flex items-center justify-center text-hyper-pink border border-hyper-pink/20 shadow-[0_0_15px_rgba(255,0,242,0.2)]">🔥</div>
+                            <span class="text-xl font-black text-hyper-title" th:text="${project.voteCount}">0</span>
+                            <span class="text-[10px] font-bold text-hyper-text/80 uppercase tracking-widest ml-1">Votes</span>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4">
+                        <!-- Vote -->
+                        <form th:action="@{/vote/{projectId}(projectId=${project.id})}" method="post" class="m-0 group/form">
+                            <button type="submit" class="w-full py-4 rounded-2xl bg-hyper-cyan/10 text-hyper-cyan border border-hyper-cyan/20 font-black uppercase text-xs tracking-widest hover:bg-hyper-cyan hover:text-white transition-all duration-500 hover:shadow-[0_0_30px_rgba(0,242,255,0.4)]">
+                                Sign Vote
+                            </button>
+                        </form>
+
+                        <!-- Join Team -->
+                        <a th:if="${project.status == 'APPROVED' and #authentication.name != project.createdBy.name}" th:href="@{/team/join/{projectId}(projectId=${project.id})}" 
+                           class="w-full py-4 rounded-2xl bg-hyper-pink/10 text-hyper-pink border border-hyper-pink/20 font-black uppercase text-xs tracking-widest text-center hover:bg-hyper-pink hover:text-white transition-all duration-500 hover:shadow-[0_0_30px_rgba(255,0,242,0.4)]">
+                            Join Team
+                        </a>
+                        
+                        <!-- Manage Team (Owner Only) -->
+                        <a th:if="${#authentication.name == project.createdBy.name}" th:href="@{/team/manage/{projectId}(projectId=${project.id})}" 
+                           class="w-full py-4 rounded-2xl bg-hyper-text/5 text-hyper-text/80 border border-hyper-text/20 font-black uppercase text-xs tracking-widest text-center hover:bg-hyper-text hover:text-white dark:hover:text-hyper-deep transition-all duration-500">
+                            Manage Protocol
+                        </a>
+                    </div>
 
                     <!-- Milestones -->
-                    <a th:href="@{/milestone/{projectId}(projectId=${project.id})}"
-                       class="btn btn-outline-info btn-sm">📋 Milestones</a>
-
+                    <a th:if="${memberAccessMap != null and memberAccessMap.get(project.id) != null and memberAccessMap.get(project.id)}" th:href="@{/milestone/{projectId}(projectId=${project.id})}"
+                       class="w-full py-4 rounded-2xl glass hover:bg-hyper-text/10 text-hyper-text font-black uppercase text-xs tracking-widest border border-hyper-text/10 flex items-center justify-center gap-2 group/btn">
+                        <span>📋</span> Protocol Milestones
+                    </a>
                 </div>
             </div>
         </div>
-    </div>
-</div>
+        
+        <!-- Empty State -->
+        <div th:if="${#lists.isEmpty(projects)}" class="glass rounded-[3rem] p-24 text-center max-w-2xl mx-auto flex flex-col items-center justify-center border-hyper-text/5">
+            <div class="text-8xl mb-8 animate-bounce">🛸</div>
+            <h3 class="text-4xl font-black text-hyper-title mb-4 uppercase tracking-tighter">Void Detected</h3>
+            <p class="text-hyper-text/60 mb-10 text-lg font-light">The registry is empty. Be the one to transmit the first innovation signal.</p>
+            <a th:href="@{/projects/submit}" class="px-12 py-5 rounded-2xl bg-hyper-cyan text-white dark:text-hyper-deep font-black uppercase tracking-widest hover:shadow-[0_0_40px_rgba(0,242,255,0.5)] transition-all">Transmit Idea</a>
+        </div>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    </div>
+
+    <!-- Scripts -->
+    <div th:replace="~{fragments/layout :: scripts}"></div>
 </body>
 </html>

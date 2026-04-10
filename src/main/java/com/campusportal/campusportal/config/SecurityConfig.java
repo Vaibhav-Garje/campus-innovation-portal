@@ -28,8 +28,8 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/auth/**", "/css/**", "/js/**", "/images/**", "/static/**").permitAll()
-                        .requestMatchers("/faculty/**").authenticated()     // ← TEMPORARY: allow any logged-in user
+                        .requestMatchers("/", "/auth/**", "/css/**", "/js/**", "/images/**", "/static/**", "/projects/list").permitAll()
+                        .requestMatchers("/faculty/**").hasAnyAuthority("FACULTY", "ROLE_FACULTY")
                         .requestMatchers("/admin/**").hasAuthority("ADMIN")
                         .anyRequest().authenticated()
                 )

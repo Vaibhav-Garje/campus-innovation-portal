@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Sync Protocol (Join Team) - InnovateCampus')}"></head>
+<body class="bg-hyper-deep text-slate-50 min-h-screen flex flex-col relative">
+
+    <!-- Hyper-Space Background -->
+    <div th:replace="~{fragments/layout :: background}"></div>
+
+    <!-- Navbar -->
+    <nav th:replace="~{fragments/layout :: navbar}"></nav>
+
+    <div class="flex-grow flex items-center justify-center relative z-10 px-4 py-20 animate-[fade-in_1s_ease-out]">
+        <div class="glass w-full max-w-2xl rounded-[3rem] p-12 md:p-16 border border-white/5 shadow-2xl relative overflow-hidden group">
+            
+            <div class="absolute -top-32 -right-32 w-80 h-80 bg-hyper-pink/20 rounded-full blur-[100px] pointer-events-none group-hover:bg-hyper-pink/30 transition-colors duration-1000"></div>
+
+            <div class="relative z-10">
+                <div class="flex items-center gap-3 mb-6">
+                    <span class="px-4 py-1.5 rounded-lg bg-hyper-pink/10 text-hyper-pink text-[10px] font-black uppercase tracking-[0.3em] border border-hyper-pink/30">
+                        Protocol Link
+                    </span>
+                    <span class="w-2 h-2 rounded-full bg-hyper-pink animate-pulse"></span>
+                </div>
+
+                <h2 class="text-4xl md:text-5xl font-black text-hyper-title mb-4 uppercase tracking-tighter italic leading-none">
+                    Initiate <br/>
+                    <span class="text-hyper-pink">Connection.</span>
+                </h2>
+                
+                <p class="text-hyper-text/60 font-light mb-10 leading-relaxed">
+                    You are requesting a neural sync with <strong class="text-hyper-title font-bold" th:text="${project.title}"></strong>. Please upload your identity node (Resume: PDF/Word) to verify credentials.
+                </p>
+
+                <!-- Contact Information -->
+                <form th:action="@{/team/join/{id}(id=${project.id})}" method="post" enctype="multipart/form-data" class="space-y-8">
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="space-y-2">
+                            <label class="block text-[10px] font-black uppercase tracking-widest text-hyper-text/50 ml-1">Contact Email</label>
+                            <input type="email" name="contactEmail" th:value="${currentUser.email}" 
+                                   class="w-full glass-input rounded-xl px-5 py-3 text-sm focus:border-hyper-pink/50 outline-none transition-all" required>
+                        </div>
+                        <div class="space-y-2">
+                            <label class="block text-[10px] font-black uppercase tracking-widest text-hyper-text/50 ml-1">Contact Phone</label>
+                            <input type="tel" name="contactPhone" placeholder="+91 XXXXX XXXXX" 
+                                   class="w-full glass-input rounded-xl px-5 py-3 text-sm focus:border-hyper-pink/50 outline-none transition-all" required>
+                        </div>
+                    </div>
+
+                    <div class="space-y-4">
+                        <label class="block text-xs font-black uppercase tracking-[0.2em] text-hyper-text/50">Identity Document (Resume)</label>
+                        <div class="flex items-center justify-center w-full">
+                            <label class="flex flex-col items-center justify-center w-full h-40 glass rounded-2xl cursor-pointer hover:bg-hyper-text/5 hover:border-hyper-pink/50 transition-all border border-hyper-text/10 group/drop">
+                                <div class="flex flex-col items-center justify-center pt-5 pb-6">
+                                    <span class="text-4xl mb-4 group-hover/drop:scale-110 transition-transform">📄</span>
+                                    <p class="mb-2 text-sm text-hyper-text/60 font-medium"><span class="font-bold text-hyper-pink">Click to upload</span> or drag and drop</p>
+                                    <p class="text-xs text-hyper-text/40 font-bold uppercase tracking-widest">PDF, DOC, DOCX</p>
+                                </div>
+                                <input type="file" name="resume" class="hidden" accept=".pdf,.doc,.docx" required />
+                            </label>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="w-full py-5 rounded-2xl bg-hyper-pink/10 border border-hyper-pink/30 text-hyper-pink font-black uppercase tracking-[0.2em] hover:bg-hyper-pink hover:text-white transition-all duration-500 hover:shadow-[0_0_40px_rgba(255,0,242,0.5)]">
+                        Transmit Request 🚀
+                    </button>
+                    
+                    <a th:href="@{/projects/list}" class="block text-center mt-6 text-xs text-hyper-text/40 font-black hover:text-hyper-pink uppercase tracking-widest transition-colors">
+                        ABORT CONNECTION
+                    </a>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <div th:replace="~{fragments/layout :: scripts}"></div>
+    <script>
+        // Show selected file name in the upload area
+        const fileInput = document.querySelector('input[type="file"]');
+        const dropLabel = fileInput ? fileInput.closest('label') : null;
+
+        if (fileInput && dropLabel) {
+            fileInput.addEventListener('change', function(e) {
+                if (e.target.files.length > 0) {
+                    const fileName = e.target.files[0].name;
+                    const para = dropLabel.querySelector('p');
+                    if (para) {
+                        para.innerHTML = `<span class="font-bold text-hyper-pink">${fileName}</span> <span class="text-hyper-text/60">ready for transmission</span>`;
+                    }
+                }
+            });
+        }
+    </script>
+</body>
+</html>

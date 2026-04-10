@@ -11,7 +11,14 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ContentDisposition;
+import org.springframework.http.MediaTypeFactory;
 
+import java.nio.charset.StandardCharsets;
 import java.security.Principal;
 import java.util.List;
 
@@ -49,9 +56,27 @@ public class TeamController {
         return "redirect:/projects/list";
     }
 
-    // ==================== JOIN TEAM BUTTON ====================
+    // ==================== JOIN TEAM BUTTON (GET FORM) ====================
+    @GetMapping("/join/{projectId}")
+    public String joinProjectForm(@PathVariable Long projectId, Model model, Principal principal, RedirectAttributes redirectAttributes) {
+        Project project = projectRepository.findById(projectId).orElse(null);
+        if (project == null) {
+            redirectAttributes.addFlashAttribute("error", "Protocol not found.");
+            return "redirect:/projects/list";
+        }
+        User user = userRepository.findByName(principal.getName());
+        model.addAttribute("project", project);
+        model.addAttribute("currentUser", user);
+        return "team/join";
+    }
+
+    // ==================== JOIN TEAM SUBMIT (WITH RESUME) ====================
     @PostMapping("/join/{projectId}")
-    public String joinProject(@PathVariable Long projectId, Principal principal, RedirectAttributes redirectAttributes) {
+    public String joinProjectSubmit(@PathVariable Long projectId, 
+                                    @RequestParam("resume") MultipartFile resume,
+                                    @RequestParam("contactEmail") String contactEmail,
+                                    @RequestParam("contactPhone") String contactPhone,
+                                    Principal principal, RedirectAttributes redirectAttributes) {
         User user = userRepository.findByName(principal.getName());
         Project project = projectRepository.findById(projectId).orElse(null);
 
@@ -68,12 +93,51 @@ public class TeamController {
             member.setProject(project);
             member.setUser(user);
             member.setStatus("PENDING");
+            member.setContactEmail(contactEmail);
+            member.setContactPhone(contactPhone);
+            
+            try {
+                if (!resume.isEmpty()) {
+                    member.setResumeFile(resume.getBytes());
+                    member.setResumeFileName(resume.getOriginalFilename());
+                }
+            } catch (Exception e) {
+                redirectAttributes.addFlashAttribute("error", "Error uploading resume.");
+                return "redirect:/projects/list";
+            }
+            
             teamMemberRepository.save(member);
-            redirectAttributes.addFlashAttribute("success", "✅ Join request sent successfully!");
+            redirectAttributes.addFlashAttribute("success", "✅ Join request sent successfully! Awaiting owner approval.");
         } else {
             redirectAttributes.addFlashAttribute("info", "You have already requested to join this project.");
         }
         return "redirect:/projects/list";
+    }
+
+    // ==================== DOWNLOAD RESUME ====================
+    @GetMapping("/resume/{id}")
+    public ResponseEntity<byte[]> downloadResume(@PathVariable Long id) {
+        TeamMember member = teamMemberRepository.findById(id).orElse(null);
+        if (member == null || member.getResumeFile() == null) {
+            return ResponseEntity.notFound().build();
+        }
+        
+        String filename = member.getResumeFileName();
+        if (filename == null || filename.isEmpty()) {
+            filename = "resume_document";
+        }
+
+        ContentDisposition contentDisposition = ContentDisposition.builder("attachment")
+                .filename(filename, StandardCharsets.UTF_8)
+                .build();
+
+        MediaType mediaType = MediaTypeFactory.getMediaType(filename)
+                .orElse(MediaType.APPLICATION_OCTET_STREAM);
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, contentDisposition.toString())
+                .contentType(mediaType)
+                .body(member.getResumeFile());
     }
 
     // ==================== NEW: MY TEAMS / MY REQUESTS PAGE ====================
@@ -85,5 +149,47 @@ public class TeamController {
             model.addAttribute("myTeams", myTeams);
         }
         return "team/my-teams";
+    }
+
+    // ==================== OWNER: MANAGE TEAM REQUESTS ====================
+    @GetMapping("/manage/{projectId}")
+    public String manageTeamRequests(@PathVariable Long projectId, Model model, Principal principal, RedirectAttributes redirectAttributes) {
+        Project project = projectRepository.findById(projectId).orElse(null);
+        if (project == null || principal == null || !project.getCreatedBy().getName().equals(principal.getName())) {
+            redirectAttributes.addFlashAttribute("error", "Unauthorized access.");
+            return "redirect:/projects/list";
+        }
+
+        List<TeamMember> pendingRequests = teamMemberRepository.findByProjectAndStatus(project, "PENDING");
+        List<TeamMember> approvedMembers = teamMemberRepository.findByProjectAndStatus(project, "APPROVED");
+
+        model.addAttribute("project", project);
+        model.addAttribute("pendingRequests", pendingRequests);
+        model.addAttribute("approvedMembers", approvedMembers);
+        
+        return "team/manage";
+    }
+
+    @PostMapping("/approve/{memberId}")
+    public String approveJoinRequestOwner(@PathVariable Long memberId, Principal principal, RedirectAttributes redirectAttributes) {
+        TeamMember member = teamMemberRepository.findById(memberId).orElse(null);
+        if (member != null && member.getProject().getCreatedBy().getName().equals(principal.getName())) {
+            member.setStatus("APPROVED");
+            teamMemberRepository.save(member);
+            redirectAttributes.addFlashAttribute("success", "Sync confirmed.");
+        }
+        return "redirect:/team/manage/" + (member != null ? member.getProject().getId() : "");
+    }
+
+    @PostMapping("/reject/{memberId}")
+    public String rejectJoinRequestOwner(@PathVariable Long memberId, Principal principal, RedirectAttributes redirectAttributes) {
+        TeamMember member = teamMemberRepository.findById(memberId).orElse(null);
+        if (member != null && member.getProject().getCreatedBy().getName().equals(principal.getName())) {
+            member.setStatus("REJECTED");
+            // Alternatively, we could delete it, but status keeps a log
+            teamMemberRepository.save(member);
+            redirectAttributes.addFlashAttribute("error", "Request disconnected.");
+        }
+        return "redirect:/team/manage/" + (member != null ? member.getProject().getId() : "");
     }
 }

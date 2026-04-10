@@ -1,45 +1,102 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head>
-    <title>Submit Project</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"/>
-</head>
-<body class="bg-light">
+<head th:replace="~{fragments/layout :: head('New Protocol Submission - InnovateCampus')}"></head>
+<body class="bg-hyper-deep text-slate-50 min-h-screen relative flex flex-col">
+    
+    <!-- Background -->
+    <div th:replace="~{fragments/layout :: background}"></div>
 
-<nav class="navbar navbar-dark bg-dark px-4">
-    <a class="navbar-brand fw-bold">🎓 Campus Innovation Portal</a>
-    <div>
-        <a th:href="@{/projects/list}" class="btn btn-outline-light btn-sm me-2">Projects</a>
-        <a th:href="@{/dashboard}" class="btn btn-outline-light btn-sm me-2">Dashboard</a>
-        <a th:href="@{/auth/logout}" class="btn btn-danger btn-sm">Logout</a>
-    </div>
-</nav>
+    <!-- Navbar -->
+    <nav th:replace="~{fragments/layout :: navbar}"></nav>
 
-<div class="container mt-5">
-    <div class="row justify-content-center">
-        <div class="col-md-6">
-            <div class="card shadow">
-                <div class="card-body p-4">
-                    <h3 class="mb-4">💡 Submit Your Project Idea</h3>
-                    <form th:action="@{/projects/create}" th:object="${project}" method="post">
-                        <div class="mb-3">
-                            <input type="text" th:field="*{title}" class="form-control" placeholder="Project Title" required/>
-                        </div>
-                        <div class="mb-3">
-                            <textarea th:field="*{description}" class="form-control" rows="4" placeholder="Project Description" required></textarea>
-                        </div>
-                        <div class="mb-3">
-                            <input type="text" th:field="*{domain}" class="form-control" placeholder="Domain (e.g. AI, Web, IoT)" required/>
-                        </div>
-                        <button type="submit" class="btn btn-primary w-100">Submit Project</button>
-                    </form>
-                    <a th:href="@{/projects/list}" class="btn btn-link mt-2">View All Projects</a>
+    <div class="max-w-4xl mx-auto px-6 py-12 relative z-10 w-full animate-[fade-in_1s_ease-out]">
+        
+        <div class="mb-16 text-center">
+            <h1 class="text-6xl md:text-7xl font-black text-hyper-title leading-none uppercase italic tracking-tighter">
+                Pitch <span class="animate-gradient">Idea</span>
+            </h1>
+            <p class="text-hyper-text/50 mt-4 text-sm font-bold uppercase tracking-[0.4em]">Transmit new innovation parameters</p>
+        </div>
+
+        <div class="glass rounded-[3rem] p-12 border-white/5 shadow-2xl relative overflow-hidden">
+            <!-- Glow background -->
+            <div class="absolute -top-32 -right-32 w-80 h-80 bg-hyper-violet/20 rounded-full blur-[100px] pointer-events-none"></div>
+            
+            <form th:action="@{/projects/create}" th:object="${project}" method="post" class="space-y-10 relative z-10">
+                <div class="space-y-4">
+                    <label class="block text-xs font-black uppercase tracking-[0.3em] text-hyper-cyan ml-2">Protocol Title</label>
+                    <input type="text" th:field="*{title}" placeholder="High-impact name for your vision..." 
+                           class="w-full glass-input p-6 rounded-2xl text-xl font-bold placeholder:text-hyper-text/20" required>
                 </div>
-            </div>
+
+                <div class="space-y-4">
+                    <label class="block text-xs font-black uppercase tracking-[0.3em] text-hyper-pink ml-2">Innovation Domain</label>
+                    
+                    <input type="hidden" th:field="*{domain}" id="finalDomain" value="WEB3">
+                    
+                    <select id="domainSelect" class="w-full glass-input p-6 rounded-2xl text-xl font-bold appearance-none cursor-pointer">
+                        <option value="WEB3">Neural Web (Web3)</option>
+                        <option value="AI">Synthetic Intelligence (AI)</option>
+                        <option value="BIO">Biotechnology</option>
+                        <option value="ROBOTICS">Cyber-Physical Systems</option>
+                        <option value="SOCIAL">Social Innovation</option>
+                        <option value="OTHER">Other (Specify Below)</option>
+                    </select>
+
+                    <input type="text" id="customDomain" placeholder="Enter custom domain..." 
+                           class="w-full glass-input p-6 mt-4 rounded-2xl text-xl font-bold placeholder:text-hyper-text/20 hidden">
+                </div>
+
+                <div class="space-y-4">
+                    <label class="block text-xs font-black uppercase tracking-[0.3em] text-hyper-title ml-2">Project Brief</label>
+                    <textarea th:field="*{description}" rows="6" placeholder="Detail the technical parameters and the problem you are solving..." 
+                              class="w-full glass-input p-6 rounded-2xl text-lg font-light placeholder:text-hyper-text/20" required></textarea>
+                </div>
+
+                <div class="pt-6">
+                    <button type="submit" class="w-full py-6 rounded-2xl bg-gradient-to-r from-hyper-cyan via-hyper-violet to-hyper-pink text-white dark:text-hyper-deep text-2xl font-black uppercase tracking-[0.2em] shadow-[0_0_50px_rgba(0,242,255,0.3)] hover:shadow-[0_0_70px_rgba(112,0,255,0.6)] hover:-translate-y-2 transition-all duration-500">
+                        BROADCAST SIGNAL ⚡
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <div class="mt-12 text-center">
+            <a th:href="@{/dashboard}" class="text-slate-500 hover:text-white font-bold uppercase text-xs tracking-[0.3em] transition-all">
+                &lsaquo; Abort Transmission
+            </a>
         </div>
     </div>
-</div>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Scripts -->
+    <div th:replace="~{fragments/layout :: scripts}"></div>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const select = document.getElementById("domainSelect");
+            const customInput = document.getElementById("customDomain");
+            const finalInput = document.getElementById("finalDomain");
+            
+            // Set initial
+            finalInput.value = select.value;
+            
+            select.addEventListener("change", function() {
+                if (this.value === "OTHER") {
+                    customInput.classList.remove("hidden");
+                    customInput.required = true;
+                    finalInput.value = customInput.value;
+                } else {
+                    customInput.classList.add("hidden");
+                    customInput.required = false;
+                    finalInput.value = this.value;
+                }
+            });
+            
+            customInput.addEventListener("input", function() {
+                if (select.value === "OTHER") {
+                    finalInput.value = this.value;
+                }
+            });
+        });
+    </script>
 </body>
 </html>

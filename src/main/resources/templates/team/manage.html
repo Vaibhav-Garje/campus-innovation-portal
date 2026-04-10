@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Protocol Management - InnovateCampus')}"></head>
+<body class="bg-hyper-deep text-slate-50 min-h-screen flex flex-col relative">
+
+    <!-- Hyper-Space Background -->
+    <div th:replace="~{fragments/layout :: background}"></div>
+
+    <!-- Navbar -->
+    <nav th:replace="~{fragments/layout :: navbar}"></nav>
+
+    <div class="flex-grow max-w-7xl mx-auto px-6 py-12 relative z-10 w-full animate-[fade-in_1s_ease-out] mb-20">
+        
+        <!-- Flash Messages -->
+        <div th:if="${success}" class="glass border-hyper-cyan/50 bg-hyper-cyan/10 text-hyper-cyan p-6 rounded-3xl mb-12 flex justify-between items-center shadow-[0_0_30px_rgba(0,242,255,0.2)] animate-pulse">
+            <span class="font-black uppercase tracking-widest" th:text="${success}"></span>
+            <button onclick="this.parentElement.style.display='none'" class="text-hyper-cyan hover:scale-125 transition-transform">&times;</button>
+        </div>
+        <div th:if="${error}" class="glass border-red-500/50 bg-red-500/10 text-red-500 p-6 rounded-3xl mb-12 flex justify-between items-center shadow-[0_0_30px_rgba(239,68,68,0.2)]">
+            <span class="font-black uppercase tracking-widest" th:text="${error}"></span>
+            <button onclick="this.parentElement.style.display='none'" class="text-red-500 hover:scale-125 transition-transform">&times;</button>
+        </div>
+
+        <div class="flex items-center justify-between mb-12">
+            <div>
+                <a th:href="@{/projects/list}" class="text-xs font-black uppercase text-hyper-text/50 hover:text-hyper-cyan transition-colors tracking-[0.2em] mb-4 inline-block">&larr; Back to Gallery</a>
+                <h1 class="text-5xl md:text-6xl font-black text-hyper-title italic uppercase tracking-tighter">
+                    Manage Protocol
+                </h1>
+                <p class="text-hyper-cyan font-bold uppercase tracking-[0.3em] text-sm mt-3" th:text="${project.title}"></p>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
+            
+            <!-- Pending Requests -->
+            <div class="space-y-6">
+                <h2 class="text-2xl font-black text-hyper-title uppercase italic tracking-tighter border-b border-hyper-text/10 pb-4">
+                    Pending Sync Requests <span class="text-hyper-pink text-lg ml-2" th:text="'(' + ${pendingRequests.size()} + ')'"></span>
+                </h2>
+
+                <div th:if="${pendingRequests.isEmpty()}" class="glass p-12 py-24 rounded-[3rem] text-center border-white/5 opacity-50">
+                    <div class="text-4xl mb-4">🤫</div>
+                    <p class="uppercase font-black tracking-widest text-[10px]">No pending requests</p>
+                </div>
+
+                <div th:each="req : ${pendingRequests}" class="glass rounded-[2rem] p-8 border-hyper-text/5 group hover:border-hyper-pink/30 transition-all">
+                    <div class="flex justify-between items-start mb-6">
+                        <div>
+                            <div class="text-[10px] font-black text-hyper-text/50 uppercase tracking-widest mb-1">Entity Name</div>
+                            <h3 class="text-2xl font-bold text-hyper-title tracking-tight" th:text="${req.user.name}"></h3>
+                        </div>
+                    </div>
+
+                    <!-- Contact Details Card -->
+                    <div class="grid grid-cols-2 gap-4 mb-4">
+                        <div class="bg-hyper-text/5 rounded-2xl p-4 border border-hyper-text/5">
+                            <p class="text-[9px] font-black text-hyper-text/50 uppercase tracking-widest mb-1">Contact Email</p>
+                            <p class="text-hyper-text font-bold truncate" th:text="${req.contactEmail}"></p>
+                        </div>
+                        <div class="bg-hyper-text/5 rounded-2xl p-4 border border-hyper-text/5">
+                            <p class="text-[9px] font-black text-hyper-text/50 uppercase tracking-widest mb-1">Contact Phone</p>
+                            <p class="text-hyper-text font-bold" th:text="${req.contactPhone}"></p>
+                        </div>
+                    </div>
+
+                    <!-- Resume Card -->
+                    <div class="bg-hyper-text/5 rounded-2xl p-6 mb-8 border border-hyper-text/5 flex items-center justify-between">
+                        <div>
+                            <p class="text-xs text-hyper-text/50 font-bold uppercase tracking-widest mb-1">Identity Node attached</p>
+                            <p class="text-hyper-text text-sm truncate max-w-[200px]" th:text="${req.resumeFileName != null ? req.resumeFileName : 'No Document Found'}"></p>
+                        </div>
+                        <a th:if="${req.resumeFile != null}" th:href="@{/team/resume/{id}(id=${req.id})}" 
+                           class="w-12 h-12 rounded-xl bg-hyper-cyan/10 flex items-center justify-center text-hyper-cyan border border-hyper-cyan/30 hover:bg-hyper-cyan hover:text-white transition-all group-hover:scale-110 shadow-[0_0_15px_rgba(0,242,255,0.2)]">
+                            ⬇️
+                        </a>
+                    </div>
+
+                    <div class="flex gap-4">
+                        <form th:action="@{/team/approve/{id}(id=${req.id})}" method="post" class="flex-1">
+                            <button type="submit" class="w-full py-4 rounded-xl bg-hyper-cyan/10 text-hyper-cyan border border-hyper-cyan/20 font-black uppercase text-[10px] tracking-widest hover:bg-hyper-cyan hover:text-white transition-all shadow-[0_0_15px_rgba(0,242,255,0.1)]">
+                                Accept Link
+                            </button>
+                        </form>
+                        <form th:action="@{/team/reject/{id}(id=${req.id})}" method="post" class="flex-1">
+                            <button type="submit" class="w-full py-4 rounded-xl bg-red-500/10 text-red-500 border border-red-500/20 font-black uppercase text-[10px] tracking-widest hover:bg-red-500 hover:text-white transition-all">
+                                Reject Link
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Approved Members -->
+            <div class="space-y-6">
+                <h2 class="text-2xl font-black text-hyper-title uppercase italic tracking-tighter border-b border-hyper-text/10 pb-4">
+                    Active Protocol Members
+                </h2>
+
+                <div th:if="${approvedMembers.isEmpty()}" class="glass p-12 py-24 rounded-[3rem] text-center border-white/5 opacity-50">
+                    <div class="text-4xl mb-4">👻</div>
+                    <p class="uppercase font-black tracking-widest text-[10px]">No active members yet</p>
+                </div>
+
+                <div th:each="member : ${approvedMembers}" class="glass rounded-full p-4 pr-8 border border-hyper-text/5 flex items-center justify-between">
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 rounded-full bg-hyper-cyan/20 flex items-center justify-center border border-hyper-cyan/30 shadow-[0_0_10px_rgba(0,242,255,0.3)]">
+                            <span class="text-hyper-cyan font-black" th:text="${member.user.name.substring(0,1)}"></span>
+                        </div>
+                        <div>
+                            <h4 class="text-hyper-title font-bold" th:text="${member.user.name}"></h4>
+                            <p class="text-[9px] font-black uppercase text-hyper-text/50 tracking-widest" th:text="${member.user.email}"></p>
+                        </div>
+                    </div>
+                    
+                    <a th:if="${member.resumeFile != null}" th:href="@{/team/resume/{id}(id=${member.id})}" 
+                       class="text-[10px] font-black uppercase tracking-widest text-hyper-cyan hover:text-white transition-colors border-b border-hyper-cyan/30">
+                        View Doc
+                    </a>
+                </div>
+                
+                <!-- Owner Self -->
+                <div class="glass rounded-full p-4 pr-8 border border-hyper-violet/30 bg-hyper-violet/5 flex items-center justify-between">
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 rounded-full bg-hyper-violet/20 flex items-center justify-center border border-hyper-violet/50 shadow-[0_0_15px_rgba(112,0,255,0.4)]">
+                            <span class="text-hyper-violet font-black">👑</span>
+                        </div>
+                        <div>
+                            <h4 class="text-hyper-title font-bold" th:text="${project.createdBy.name}"></h4>
+                            <p class="text-[9px] font-black uppercase text-hyper-violet tracking-widest">Protocol Creator</p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <div th:replace="~{fragments/layout :: scripts}"></div>
+</body>
+</html>

@@ -31,6 +31,9 @@ public class AuthController {
 
     @PostMapping("/register")
     public String registerUser(User user) {
+        if (user.getRole() == null || user.getRole().isEmpty()) {
+            user.setRole("STUDENT");
+        }
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         userRepository.save(user);
         return "redirect:/auth/login";
